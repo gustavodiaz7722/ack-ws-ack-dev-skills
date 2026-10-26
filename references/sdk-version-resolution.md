@@ -10,7 +10,7 @@ Shared reference for locating and reading the correct AWS API model when plannin
 
 This is authoritative and comes from the controller itself, not from any SDK checkout. Read `apis/<version>/ack-generate-metadata.yaml`. Code generation fetches the Smithy model from one of two mutually exclusive sources, and **the service-specific version takes precedence:**
 
-- `aws_service_sdk_version` (→ `--aws-service-sdk-version`): the **per-service** SDK tag, e.g. `service/<svc>/v1.29.0`. If this key is set (not `null`/empty), code-gen uses **this** model and ignores `aws_sdk_go_version` for model fetching.
+- `aws_service_sdk_version` (→ `--aws-service-sdk-version`): the **per-service** SDK version, written as the bare module version (e.g. `v1.29.0`), which code-gen expands to the `service/<svc>/v1.29.0` tag. Pass the bare version to `AWS_SERVICE_SDK_VERSION` too; the full tag produces an HTTP 404 on the model fetch. If this key is set (not `null`/empty), code-gen uses **this** model and ignores `aws_sdk_go_version` for model fetching.
 - `aws_sdk_go_version` (→ `--aws-sdk-go-version`): the **core** `aws-sdk-go-v2` release tag, e.g. `v1.41.5`. Used when `aws_service_sdk_version` is unset. Note the core tag still implies a concrete service module version — cross-check the controller's `go.mod` `service/<svc>` line for the exact service module tag (e.g. `service/bedrockagentcorecontrol v1.29.0`) and read the model at that version.
 
 ## Step 2: Read the model at that resolved version
