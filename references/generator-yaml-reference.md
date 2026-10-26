@@ -287,6 +287,22 @@ fields:
       skip_incomplete_check: {}   # Skip waiting for late-init to complete before marking synced
 ```
 
+**Nested paths use the Go (CRD) field names for child segments.** The late-init
+template writes each child segment straight into a Go field accessor, so the API
+casing does not compile:
+
+```yaml
+fields:
+  PublicAccessBlockConfiguration.BlockPublicACLs:   # not BlockPublicAcls
+    late_initialize: {}
+```
+
+`BlockPublicAcls` generates `ko.Spec.PublicAccessBlockConfiguration.BlockPublicAcls
+undefined` in `manager.go`. Top-level keys (e.g. `BucketAccountId`) are normalized
+for you, and other nested options such as `references` accept the API casing.
+Child late-init only runs when the parent struct is already set in the desired
+spec. If the user can omit the parent entirely, late-initialize the parent as well.
+
 ### References (Cross-Resource)
 
 ```yaml
